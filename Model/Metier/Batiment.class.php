@@ -1,14 +1,12 @@
 <?php
-require_once('Batiment.class.php');
 require_once('Ressource.class.php');
 require_once('Technologie.class.php');
 
-class Unite {
-    private $_id;		// int
-    private $_affectation;	// Batiment
-    private $_niveau;		// int
-    private $_cout;		// Ressource[]
-    private $_techNeeded;	// Technologie[]
+abstract class Batiment {
+    protected $_id;		// int
+    protected $_niveau;		// int
+    protected $_cout;		// Ressource[]
+    protected $_techNeeded;	// Technologie[]
 	
     /*
      * CONSTRUCTEURS
@@ -27,14 +25,6 @@ class Unite {
 
     public function setId($id){
         $this->_id = $id;
-    }
-
-    public function getAffectation(){
-        return $this->_affectation;
-    }
-
-    public function setAffectation($affectation){
-        $this->_affectation = $affectation;
     }
 
     public function getNiveau(){
@@ -64,26 +54,7 @@ class Unite {
     /*
      * FONCTIONS GENERIQUES
      */
-    public function toString() {
-        $coutString = "";
-
-        foreach ($this->_cout as $c){
-            $coutString .= $c->toString()." ";
-        }
-
-        $techNeededString = "";
-
-        foreach ($this->_techNeeded as $tn){
-            $techNeededString .= $tn->toString()." ";
-        }
-		
-        return static::class."<br/> Id : 
-            ".$this->_id."<br/> affectation : 
-            ".$this->_affectation->toString()."<br/> niveau : 
-            ".$this->_niveau."<br/> cout : 
-            ".$coutString."<br/> techNeeded : 
-            ".$techNeededString."<br/>";
-    }
+    abstract protected function toString();
     
     public function addRessourceCout ($ressource){
         if (is_a($ressource, 'Ressource')){
