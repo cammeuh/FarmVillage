@@ -89,7 +89,7 @@ class DAOUser {
             
             foreach ($toInsert->getUnites() as $unit){
                 $uniteId = 0;
-                var_dump($unit->getId());
+                
                 if(is_null($unit->getId())){
                     $unite = $DAOUnite->create($unit);
                     $uniteId = $unite->getId();
@@ -97,7 +97,7 @@ class DAOUser {
                 else{
                     $uniteId = $unit->getId();
                 }
-                var_dump('INSERT INTO UserUnites (pseudoUser, idUnite) VALUES (\''.$toInsert->getPseudo().'\','.$uniteId.');');
+                
                 $db->query('INSERT INTO UserUnites (pseudoUser, idUnite) VALUES (\''.$toInsert->getPseudo().'\','.$uniteId.');');
             }
         } catch (Exception $ex) {
@@ -119,6 +119,7 @@ class DAOUser {
             $DAOTechnologie = new DAOTechnologie();
             $DAOBatimentDefense = new DAOBatimentDefense();
             $DAOBatimentProduction = new DAOBatimentProduction();
+            $DAOUnite = new DAOUnite();
             
             foreach($db->query('SELECT pseudo,coordonnee,faction,password FROM User WHERE pseudo=\''.$pseudo.'\';') as $row){
                 $returnValue->setPseudo($row['pseudo']);
@@ -160,6 +161,55 @@ class DAOUser {
         try{
             if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
             $result = $db->query('UPDATE User SET coordonnee=\''.$toUpdate->getCoordonnee().'\',faction=\''.$toUpdate->getFaction().'\',password=\''.$toUpdate->getPassword().'\' WHERE pseudo=\''.$toUpdate->getPseudo().'\';');
+        } catch (Exception $ex) {
+            echo($ex->getMessage());
+        }
+    }
+    
+    /*
+     * Deletes a User and its links, based on its id
+     */
+    public function deleteUser(User $toDelete, $db=null){
+        try{
+            if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
+            $DAORessource = new DAORessource();
+            $DAOTechnologie = new DAOTechnologie();
+            $DAOBatimentDefense = new DAOBatimentDefense();
+            $DAOBatimentProduction = new DAOBatimentProduction();
+            $DAOUnite = new DAOUnite();
+            $pseudo = $toDelete->getPseudo();
+            
+            foreach($db->query('SELECT idUnite FROM UserUnites WHERE pseudoUser=\''.$pseudo.'\';') as $row){
+                $idUnite = $row['idUnite'];
+                $db->query('DELETE FROM UserUnites WHERE idUnite='.$idUnite.';');
+                $DAOUnite->deleteUniteById($idUnite, $db);
+            }
+            
+            foreach($db->query('SELECT idBatimentProduction FROM UserBatimentsProduction WHERE pseudoUser=\''.$pseudo.'\';') as $row){
+                $idBatimentProduction = $row['idBatimentProduction'];
+                $db->query('DELETE FROM UserBatimentsProduction WHERE idBatimentProduction='.$idBatimentProduction.';');
+                $DAOBatimentProduction->deleteBatimentProductionById($idBatimentProduction, $db);
+            }
+            
+            foreach($db->query('SELECT idBatimentDefense FROM UserBatimentsDefense WHERE pseudoUser=\''.$pseudo.'\';') as $row){
+                $idBatimentDefense = $row['idBatimentDefense'];
+                $db->query('DELETE FROM UserBatimentsDefense WHERE idBatimentDefense='.$idBatimentDefense.';');
+                $DAOBatimentDefense->deleteBatimentDefenseById($idBatimentDefense, $db);
+            }
+            
+            foreach($db->query('SELECT idTechnologie FROM UserTechnologies WHERE pseudoUser=\''.$pseudo.'\';') as $row){
+                $idTechnologie = $row['idTechnologie'];
+                $db->query('DELETE FROM UserTechnologies WHERE idTechnologie='.$idTechnologie.';');
+                $DAOTechnologie->deleteTechnologieById($idTechnologie, $db);
+            }
+            
+            foreach($db->query('SELECT idRessource FROM UserRessources WHERE pseudoUser=\''.$pseudo.'\';') as $row){
+                $idRessource = $row['idRessource'];
+                $db->query('DELETE FROM UserRessources WHERE idRessource='.$idRessource.';');
+                $DAORessource->deleteRessourceById($idRessource, $db);
+            }
+            
+            $db->query('DELETE FROM User WHERE pseudo=\''.$toDelete->getPseudo().'\';');
         } catch (Exception $ex) {
             echo($ex->getMessage());
         }

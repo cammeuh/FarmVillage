@@ -116,5 +116,32 @@ class DAOUnite {
             echo($ex->getMessage());
         }
     }
+    
+    /*
+     * Deletes a Unite and its links, based on its id
+     */
+    public function deleteUniteById($toDelete, $db=null){
+        try{
+            if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
+            $DAORessource = new DAORessource();
+            $DAOTechnologie = new DAOTechnologie();
+            
+            foreach($db->query('SELECT idTechnologie FROM UniteTechnologie WHERE idUnite='.$toDelete.';') as $row){
+                $idTechnologie = $row['idTechnologie'];
+                $db->query('DELETE FROM UniteTechnologie WHERE idTechnologie='.$idTechnologie.';');
+                $DAOTechnologie->deleteTechnologieById($idTechnologie, $db);
+            }
+            
+            foreach($db->query('SELECT idRessource FROM UniteCout WHERE idUnite='.$toDelete.';') as $row){
+                $idRessource = $row['idRessource'];
+                $db->query('DELETE FROM UniteCout WHERE idRessource='.$idRessource.';');
+                $DAORessource->deleteRessourceById($idRessource, $db);
+            }
+            
+            $db->query('DELETE FROM Unite WHERE id='.$toDelete.';');
+        } catch (Exception $ex) {
+            echo($ex->getMessage());
+        }
+    }
 }
 ?>

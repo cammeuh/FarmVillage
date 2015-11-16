@@ -16,18 +16,24 @@
             $user->setCoordonnee("(1;1)");
             
             $ressourceUn = $this->createRessource(RESSOURCEUN, 1000);
-            $ressourceDeux = $this->createRessource(RESSOURCEDEUX, 1500);
-            $ressourceTrois = $this->createRessource(RESSOURCETROIS, 2000);
+            $ressourceDeux = $this->createRessource(RESSOURCEDEUX, 2000);
+            $ressourceTrois = $this->createRessource(RESSOURCETROIS, 3000);
             
             $user->addRessource($ressourceUn);
             $user->addRessource($ressourceDeux);
             $user->addRessource($ressourceTrois);
             
+            $ressourceUn = $this->createRessource(RESSOURCEUN, 4000);
+            $ressourceDeux = $this->createRessource(RESSOURCEDEUX, 5000);
+            $ressourceTrois = $this->createRessource(RESSOURCETROIS, 6000);
+            
             $technologieUn = $this->createTechnologie(TECHNOLOGIEUN, $ressourceUn);
-            $technologieDeux = $this->createTechnologie(TECHNOLOGIEDEUX, [$ressourceUn, $ressourceDeux], 2);
+            $technologieDeux = $this->createTechnologie(TECHNOLOGIEDEUX, $ressourceDeux, 2);
             $technologieTrois = $this->createTechnologie(TECHNOLOGIETROIS, $ressourceTrois, 5);
             
+            $user->addTechnologie($technologieUn);
             $user->addTechnologie($technologieDeux);
+            $user->addTechnologie($technologieTrois);
             
             $batimentDefense = new BatimentDefense();
             $batimentDefense->setniveau(0);
@@ -35,6 +41,11 @@
             $batimentDefense->addTechNeeded($technologieUn);
             $batimentDefense->setAttaque(100);
             $batimentDefense->setDefense(1000);
+            
+            $ressourceUn = $this->createRessource(RESSOURCEUN, 7000);
+            $ressourceDeux = $this->createRessource(RESSOURCEDEUX, 8000);
+            $ressourceTrois = $this->createRessource(RESSOURCETROIS, 9000);
+            $technologieUn = $this->createTechnologie(TECHNOLOGIEUN, $ressourceUn);
             
             $batimentProduction = new BatimentProduction();
             $batimentProduction->setniveau(0);
@@ -46,6 +57,10 @@
             
             $user->addBatimentDefense($batimentDefense);
             $user->addBatimentProduction($batimentProduction);
+            
+            $ressourceUn = $this->createRessource(RESSOURCEUN, 10000);
+            $ressourceDeux = $this->createRessource(RESSOURCEDEUX, 8000);
+            $technologieUn = $this->createTechnologie(TECHNOLOGIEUN, $ressourceDeux);
             
             $unite = new Unite();
             $unite->setAffectationProduction($batimentProduction);
@@ -60,7 +75,9 @@
             
             $userDone = $DAOUser->create($user);
             
-            var_dump($userDone);
+            //var_dump($userDone);
+            
+            $DAOUser->deleteUser($userDone);
         }
         
         /*
@@ -73,26 +90,6 @@
             $returnValue->setQuantite($quantite);
             
             return $returnValue;
-        }
-        
-        public function testNewRessource() {
-            $ress = $this->createRessource(RESSOURCEUN, rand(0, 1000));
-            $ressDeux = $this->createRessource(RESSOURCEUN, rand(0, 1000));
-            $ressArray = array();
-            
-            
-            $dao = new DAORessource();
-            $ress = $dao->create($ress);
-            
-            $ressArray[] = $ress;
-            $ressArray[] = $ressDeux;
-            
-            $tech = $this->createTechnologie(TECHNOLOGIEUN, $ressArray);
-            $dao = new DAOTechnologie();
-            $tech = $dao->create($tech);
-            
-            // CORRECT JUSQU'ICI
-            var_dump($tech);
         }
         
         /*

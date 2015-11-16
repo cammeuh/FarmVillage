@@ -86,6 +86,24 @@ class DAOTechnologie {
         }
     }
     
-    
+    /*
+     * Deletes a Technologie and its links, based on its id
+     */
+    public function deleteTechnologieById($toDelete, $db=null){
+        try{
+            if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
+            $DAORessource = new DAORessource();
+            
+            foreach($db->query('SELECT idRessource FROM TechnologieCout WHERE idTechnologie='.$toDelete.';') as $row){
+                $idRessource = $row['idRessource'];
+                $db->query('DELETE FROM TechnologieCout WHERE idRessource='.$idRessource.';');
+                $DAORessource->deleteRessourceById($idRessource, $db);
+            }
+            
+            $db->query('DELETE FROM Technologie WHERE id='.$toDelete.';');
+        } catch (Exception $ex) {
+            echo($ex->getMessage());
+        }
+    }
 }
 ?>

@@ -62,6 +62,18 @@ class DAORessource {
         }
     }
     
+    /*
+     * Deletes a Ressource and its links, based on its id
+     */
+    public function deleteRessourceById($toDelete, $db=null){
+        try{
+            if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
+            $db->query('DELETE FROM Ressource WHERE id='.$toDelete.';');
+        } catch (Exception $ex) {
+            echo($ex->getMessage());
+        }
+    }
+    
     
 }
 ?>

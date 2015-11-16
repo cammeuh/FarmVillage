@@ -26,7 +26,8 @@ class DAOBatimentProduction {
             $DAORessource = new DAORessource();
             $DAOTechnologie = new DAOTechnologie();
             $returnValue = $toInsert;
-            $db->query('INSERT INTO BatimentProduction (niveau,productionTemps,actif,idRessource) VALUES ('.$toInsert->getNiveau().','.time().','.$toInsert->isActif().','.$toInsert->getProductionType()->getId().');');
+            $returnValue->setProductionType($DAORessource->create($toInsert->getProductionType()));
+            $db->query('INSERT INTO BatimentProduction (niveau,productionTemps,actif,idRessource) VALUES ('.$toInsert->getNiveau().','.time().','.$toInsert->isActif().','.$returnValue->getProductionType()->getId().');');
             $id = intval($db->lastInsertId());
             $returnValue->setId($id);
             
@@ -94,7 +95,7 @@ class DAOBatimentProduction {
                 $returnValue->setNiveau($row['niveau']);
                 $returnValue->setProductionTemps($row['productionTemps']);
                 $returnValue->setActif($row['actif']);
-                $returnValue->setPrixReparation($DAORessource->getRessourceById($row['idRessource']));
+                $returnValue->setProductionType($DAORessource->getRessourceById($row['idRessource']));
             }
             
             foreach($db->query('SELECT idRessource FROM BatimentProductionCout WHERE idBatiment='.$id.';') as $row){
@@ -121,6 +122,41 @@ class DAOBatimentProduction {
         try{
             if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
             $result = $db->query('UPDATE BatimentProduction SET nom=\''.$toUpdate->getNom().'\',niveau='.$toUpdate->getNiveau().' WHERE id='.$toUpdate->getId().';');
+        } catch (Exception $ex) {
+            echo($ex->getMessage());
+        }
+    }
+    
+    /*
+     * Deletes a BatimentProduction and its links, based on its id
+     */
+    public function deleteBatimentProductionById($toDelete, $db=null){
+        try{
+            if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
+            $DAORessource = new DAORessource();
+            $DAOTechnologie = new DAOTechnologie();
+            $batimentProduction = $this->getBatimentProductionById($toDelete);
+            
+            foreach($db->query('SELECT idRessource FROM BatimentProductionPrixReparation WHERE idBatiment='.$toDelete.';') as $row){
+                $idRessource = $row['idRessource'];
+                $db->query('DELETE FROM BatimentProductionPrixReparation WHERE idRessource='.$idRessource.';');
+                $DAORessource->deleteRessourceById($idRessource, $db);
+            }
+            
+            foreach($db->query('SELECT idTechnologie FROM BatimentProductionTechnologie WHERE idBatiment='.$toDelete.';') as $row){
+                $idTechnologie = $row['idTechnologie'];
+                $db->query('DELETE FROM BatimentProductionTechnologie WHERE idTechnologie='.$idTechnologie.';');
+                $DAOTechnologie->deleteTechnologieById($idTechnologie, $db);
+            }
+            
+            foreach($db->query('SELECT idRessource FROM BatimentProductionCout WHERE idBatiment='.$toDelete.';') as $row){
+                $idRessource = $row['idRessource'];
+                $db->query('DELETE FROM BatimentProductionCout WHERE idRessource='.$idRessource.';');
+                $DAORessource->deleteRessourceById($idRessource, $db);
+            }
+            
+            $db->query('DELETE FROM BatimentProduction WHERE id='.$toDelete.';');
+            $db->query('DELETE FROM Ressource WHERE id='.$batimentProduction->getProductionType()->getId().';');
         } catch (Exception $ex) {
             echo($ex->getMessage());
         }

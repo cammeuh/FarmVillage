@@ -101,5 +101,32 @@ class DAOBatimentDefense {
             echo($ex->getMessage());
         }
     }
+    
+    /*
+     * Deletes a BatimentDefense and its links, based on its id
+     */
+    public function deleteBatimentDefenseById($toDelete, $db=null){
+        try{
+            if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
+            $DAORessource = new DAORessource();
+            $DAOTechnologie = new DAOTechnologie();
+            
+            foreach($db->query('SELECT idTechnologie FROM BatimentDefenseTechnologie WHERE idBatiment='.$toDelete.';') as $row){
+                $idTechnologie = $row['idTechnologie'];
+                $db->query('DELETE FROM BatimentDefenseTechnologie WHERE idTechnologie='.$idTechnologie.';');
+                $DAOTechnologie->deleteTechnologieById($idTechnologie, $db);
+            }
+            
+            foreach($db->query('SELECT idRessource FROM BatimentDefenseCout WHERE idBatiment='.$toDelete.';') as $row){
+                $idRessource = $row['idRessource'];
+                $db->query('DELETE FROM BatimentDefenseCout WHERE idRessource='.$idRessource.';');
+                $DAORessource->deleteRessourceById($idRessource, $db);
+            }
+            
+            $db->query('DELETE FROM BatimentDefense WHERE id='.$toDelete.';');
+        } catch (Exception $ex) {
+            echo($ex->getMessage());
+        }
+    }
 }
 ?>
