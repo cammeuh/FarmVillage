@@ -6,12 +6,7 @@
         include_once $filename;
     }
     
-    foreach (glob(EXTERNEPATH.'*.php') as $filename)
-    {
-        include_once $filename;
-    }
-    
-    foreach (glob(METIERPATH.'*.php') as $filename)
+    foreach (glob(DAOPATH.'*.php') as $filename)
     {
         include_once $filename;
     }

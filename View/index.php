@@ -23,6 +23,7 @@
         <?php
             //$controller->createTestUnit();
             $controller->initDB();
+            $controller->testNewRessource();
         ?>
     </div>
     

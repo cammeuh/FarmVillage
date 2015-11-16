@@ -1,5 +1,5 @@
 <?php
-    require_once('IncludeAllModel.php');
+    require_once('Includes.php');
     
     class IndexController{
         
@@ -68,11 +68,31 @@
             return $returnValue;
         }
         
+        public function testNewRessource() {
+            $ress = $this->createRessource(RESSOURCEUN, rand(0, 1000));
+            $ressDeux = $this->createRessource(RESSOURCEUN, rand(0, 1000));
+            $ressArray = array();
+            
+            
+            $dao = new DAORessource();
+            $ress = $dao->create($ress);
+            
+            $ressArray[] = $ress;
+            $ressArray[] = $ressDeux;
+            
+            $tech = $this->createTechnologie(TECHNOLOGIEUN, $ressArray);
+            $dao = new DAOTechnologie();
+            $tech = $dao->create($tech);
+            
+            // CORRECT JUSQU'ICI
+            var_dump($tech);
+        }
+        
         /*
          * $niveau n'est pas obligatoire, considéré 0 si pas de niveau passé
          * $ressource doit être une Ressource ou un tableau de Ressource
          */
-        public function createTechnologie($nom, $niveau = 0, $ressource) {
+        public function createTechnologie($nom, $ressource , $niveau = 0) {
             $returnValue = new Technologie();
             
             $returnValue->setNom($nom);
@@ -81,12 +101,12 @@
             if (is_array($ressource)){
                 foreach ($ressource as $r){
                     if (is_a($r,'Ressource')){
-                        $returnValue->addCout($r);
+                        $returnValue->addRessourceCout($r);
                     }
                 }
             }
             else if (is_a($ressource,'Ressource')){
-                $returnValue->addCout($ressource);
+                $returnValue->addRessourceCout($ressource);
             }
             else{
                 return 0;
@@ -109,12 +129,12 @@
             if (is_array($cout)){
                 foreach ($cout as $c){
                     if (is_a($c,'Ressource')){
-                        $returnValue->addCout($c);
+                        $returnValue->addRessourceCout($c);
                     }
                 }
             }
             else if (is_a($cout,'Ressource')){
-                $returnValue->addCout($cout);
+                $returnValue->addRessourceCout($cout);
             }
             else{
                 return 0;
@@ -149,12 +169,12 @@
             if (is_array($cout)){
                 foreach ($cout as $c){
                     if (is_a($c,'Ressource')){
-                        $returnValue->addCout($c);
+                        $returnValue->addRessourceCout($c);
                     }
                 }
             }
             else if (is_a($cout,'Ressource')){
-                $returnValue->addCout($cout);
+                $returnValue->addRessourceCout($cout);
             }
             else{
                 return 0;
@@ -187,13 +207,6 @@
             else{
                 return 0;
             }
-            
-            /*
-             * private $_productionType;	// Ressource[]
-    private $_productionTemps;	// int
-    private $_prixReparation;	// Ressource[]
-    private $_actif;
-             */
             
             return $returnValue;
         }
