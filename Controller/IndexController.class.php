@@ -15,45 +15,52 @@
             $user->setFaction("Alliance");
             $user->setCoordonnee("(1;1)");
             
-            $ressourceUn = $this->createRessource(RESSOURCEUN, 1234);
-            $ressourceDeux = $this->createRessource(RESSOURCEDEUX, 9876);
-            $ressourceTrois = $this->createRessource(RESSOURCETROIS, 5555);
+            $ressourceUn = $this->createRessource(RESSOURCEUN, 1000);
+            $ressourceDeux = $this->createRessource(RESSOURCEDEUX, 1500);
+            $ressourceTrois = $this->createRessource(RESSOURCETROIS, 2000);
             
             $user->addRessource($ressourceUn);
             $user->addRessource($ressourceDeux);
             $user->addRessource($ressourceTrois);
             
             $technologieUn = $this->createTechnologie(TECHNOLOGIEUN, $ressourceUn);
-            $technologieDeux = $this->createTechnologie(TECHNOLOGIEDEUX, 2, [$ressourceUn, $ressourceDeux]);
-            $technologieTrois = $this->createTechnologie(TECHNOLOGIETROIS, 5, $ressourceTrois);
+            $technologieDeux = $this->createTechnologie(TECHNOLOGIEDEUX, [$ressourceUn, $ressourceDeux], 2);
+            $technologieTrois = $this->createTechnologie(TECHNOLOGIETROIS, $ressourceTrois, 5);
             
             $user->addTechnologie($technologieDeux);
             
-            $batimentDefense = $this->createBatimentDefense(1654867, $ressourceUn, $technologieTrois, 1000);
+            $batimentDefense = new BatimentDefense();
+            $batimentDefense->setniveau(0);
+            $batimentDefense->addRessourceCout($ressourceUn);
+            $batimentDefense->addTechNeeded($technologieUn);
+            $batimentDefense->setAttaque(100);
+            $batimentDefense->setDefense(1000);
             
             $batimentProduction = new BatimentProduction();
-            $batimentProduction->setId(0);
             $batimentProduction->setniveau(0);
-            $batimentProduction->addRessourceCout($ressource);
-            $batimentProduction->addTechNeeded($technologie);
-            $batimentProduction->addRessourceProduction($ressource);
-            $batimentProduction->setProductionTemps(60);
-            $batimentProduction->addPrixReparation($ressource);
+            $batimentProduction->addRessourceCout($ressourceUn);
+            $batimentProduction->addTechNeeded($technologieUn);
+            $batimentProduction->setProductionType($ressourceDeux);
+            $batimentProduction->addPrixReparation($ressourceTrois);
             $batimentProduction->setActif(true);
             
-            $user->addBatiment($batimentDefense);
-            $user->addBatiment($batimentProduction);
+            $user->addBatimentDefense($batimentDefense);
+            $user->addBatimentProduction($batimentProduction);
             
             $unite = new Unite();
-            $unite->setId(0);
-            $unite->setAffectation($batimentProduction);
+            $unite->setAffectationProduction($batimentProduction);
+            $unite->setAffectationDefense(0);
             $unite->setNiveau(0);
-            $unite->addRessourceCout($ressource);
-            $unite->addTechNeeded($technologie);
+            $unite->addRessourceCout($ressourceUn);
+            $unite->addTechNeeded($technologieUn);
             
             $user->addUnite($unite);
             
-            var_dump($user);
+            $DAOUser = new DAOUser();
+            
+            $userDone = $DAOUser->create($user);
+            
+            var_dump($userDone);
         }
         
         /*
@@ -231,6 +238,7 @@
                 $db->query('CREATE TABLE BatimentProductionCout (idBatiment int(9) NOT NULL, idRessource int(9) NOT NULL, FOREIGN KEY(idBatiment) REFERENCES BatimentProduction(id), FOREIGN KEY(idRessource) REFERENCES Ressource(id));');
                 $db->query('CREATE TABLE BatimentDefenseTechnologie (idBatiment int(9) NOT NULL, idTechnologie int(9) NOT NULL, FOREIGN KEY(idBatiment) REFERENCES BatimentDefense(id), FOREIGN KEY(idTechnologie) REFERENCES Technologie(id));');
                 $db->query('CREATE TABLE BatimentProductionTechnologie (idBatiment int(9) NOT NULL, idTechnologie int(9) NOT NULL, FOREIGN KEY(idBatiment) REFERENCES BatimentProduction(id), FOREIGN KEY(idTechnologie) REFERENCES Technologie(id));');
+                $db->query('CREATE TABLE BatimentProductionPrixReparation (idBatiment int(9) NOT NULL, idRessource int(9) NOT NULL, FOREIGN KEY(idBatiment) REFERENCES BatimentProduction(id), FOREIGN KEY(idRessource) REFERENCES Ressource(id));');
                 $db->query('CREATE TABLE Unite (id int(9) NOT NULL auto_increment, niveau int(9) NOT NULL DEFAULT 1, idBatimentDefense int, idBatimentProduction int, PRIMARY KEY(id), FOREIGN KEY(idBatimentDefense) REFERENCES BatimentDefense(id), FOREIGN KEY(idBatimentProduction) REFERENCES BatimentProduction(id));');
                 $db->query('CREATE TABLE UniteCout (idUnite int(9) NOT NULL, idRessource int(9) NOT NULL, FOREIGN KEY(idUnite) REFERENCES Unite(id), FOREIGN KEY(idRessource) REFERENCES Ressource(id));');
                 $db->query('CREATE TABLE UniteTechnologie (idUnite int(9) NOT NULL, idTechnologie int(9) NOT NULL, FOREIGN KEY(idUnite) REFERENCES Unite(id), FOREIGN KEY(idTechnologie) REFERENCES Technologie(id));');

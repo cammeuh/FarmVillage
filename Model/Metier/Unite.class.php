@@ -5,7 +5,8 @@ require_once('Technologie.class.php');
 
 class Unite {
     private $_id;		// int
-    private $_affectation;	// Batiment
+    private $_affectationDef;	// BatimentDefense
+    private $_affectationProd;	// BatimentProduction
     private $_niveau;		// int
     private $_cout;		// Ressource[]
     private $_techNeeded;	// Technologie[]
@@ -29,12 +30,20 @@ class Unite {
         $this->_id = $id;
     }
 
-    public function getAffectation(){
-        return $this->_affectation;
+    public function getAffectationDefense(){
+        return $this->_affectationDef;
     }
 
-    public function setAffectation($affectation){
-        $this->_affectation = $affectation;
+    public function setAffectationDefense($affectationDef){
+        $this->_affectationDef = $affectationDef;
+    }
+    
+    public function getAffectationProduction(){
+        return $this->_affectationProd;
+    }
+
+    public function setAffectationProduction($affectationProd){
+        $this->_affectationProd = $affectationProd;
     }
 
     public function getNiveau(){
@@ -79,7 +88,7 @@ class Unite {
 		
         return static::class."<br/> Id : 
             ".$this->_id."<br/> affectation : 
-            ".$this->_affectation->toString()."<br/> niveau : 
+            ".$this->_affectationDefense->toString()."<br/> niveau : 
             ".$this->_niveau."<br/> cout : 
             ".$coutString."<br/> techNeeded : 
             ".$techNeededString."<br/>";
@@ -101,7 +110,7 @@ class Unite {
                 $this->_techNeeded = array();
             }
             
-            $this->_techNeeded = $technologie;
+            $this->_techNeeded[] = $technologie;
         }
     }
     

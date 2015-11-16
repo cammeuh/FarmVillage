@@ -11,7 +11,8 @@ class User {
     private $_password;		// string
     private $_ressources;	// Ressource[]
     private $_technologies;	// Technologie[]
-    private $_batiments;	// Batiment[]
+    private $_batimentsDef;	// Batiment[]
+    private $_batimentsProd;	// Batiment[]
     private $_unites;           // Unite[]
 	
     /*
@@ -49,8 +50,12 @@ class User {
         return $this->_technologies;
     }
 
-    public function getBatiments() {
-        return $this->_batiments;
+    public function getBatimentsDefense() {
+        return $this->_batimentsDef;
+    }
+    
+    public function getBatimentsProduction() {
+        return $this->_batimentsProd;
     }
 
     public function getUnites() {
@@ -81,8 +86,12 @@ class User {
         $this->_technologies = $technologies;
     }
 
-    public function setBatiments($batiments) {
-        $this->_batiments = $batiments;
+    public function setBatimentsDefense($batiments) {
+        $this->_batimentsDef = $batiments;
+    }
+    
+    public function setBatimentsProduction($batiments) {
+        $this->_batimentsProd = $batiments;
     }
 
     public function setUnites($unites) {
@@ -148,13 +157,23 @@ class User {
         }
     }
     
-    public function addBatiment($batiment) {
-        if (is_a($batiment, 'Batiment')){
-            if (!isset($this->_batiments)){
-                $this->_batiments = array();
+    public function addBatimentDefense($batiment) {
+        if (is_a($batiment, 'BatimentDefense')){
+            if (!isset($this->_batimentsDef)){
+                $this->_batimentsDef = array();
             }
             
-            $this->_batiments[] = $batiment;
+            $this->_batimentsDef[] = $batiment;
+        }
+    }
+    
+    public function addBatimentProduction($batiment) {
+        if (is_a($batiment, 'BatimentProduction')){
+            if (!isset($this->_batimentsProd)){
+                $this->_batimentsProd = array();
+            }
+            
+            $this->_batimentsProd[] = $batiment;
         }
     }
     

@@ -21,9 +21,9 @@
     
     <div id="body">
         <?php
-            //$controller->createTestUnit();
             $controller->initDB();
-            $controller->testNewRessource();
+            $controller->createTestUnit();
+            //$controller->testNewRessource();
         ?>
     </div>
     

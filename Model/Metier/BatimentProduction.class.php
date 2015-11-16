@@ -77,7 +77,7 @@ class BatimentProduction extends Batiment {
             ".$this->_niveau."<br/> cout : 
             ".$coutString."<br/> techNeeded : 
             ".$techNeededString."<br/> productionType :
-            ".$this->productionType."<br/> productionTemps :  
+            ".$this->_productionType."<br/> productionTemps :  
             ".$this->_productionTemps."<br/> coutReparation : 
             ".$prixReparationString."<br/> isActif : 
             ".$this->_actif."<br/>";
@@ -89,7 +89,7 @@ class BatimentProduction extends Batiment {
                 $this->_prixReparation = array();
             }
             
-            $this->_prixReparation = $ressource;
+            $this->_prixReparation[] = $ressource;
         }
     }
     

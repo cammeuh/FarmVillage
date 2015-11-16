@@ -72,7 +72,7 @@ abstract class Batiment {
                 $this->_techNeeded = array();
             }
             
-            $this->_techNeeded = $technologie;
+            $this->_techNeeded[] = $technologie;
         }
     }
     

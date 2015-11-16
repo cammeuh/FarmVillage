@@ -2,10 +2,6 @@
 require_once('Includes.php');
 
 class DAOTechnologie {
-    private $_id;               // int
-    private $_nom;		// string
-    private $_niveau;		// int
-    private $_cout;		// Ressource[]
     /*
      * CONSTRUCTEURS
      */
@@ -17,13 +13,14 @@ class DAOTechnologie {
      * Inserts a new Technologie into DB, and returns the object with its ID
      */
     public function create(Technologie $toInsert, $db = null) {
-        $returnValue = new Technologie();
+        $returnValue = null;
         try{
             if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
             $DAORessource = new DAORessource();
+            $returnValue = $toInsert;
             $db->query('INSERT INTO Technologie (nom, niveau) VALUES (\''.$toInsert->getNom().'\','.$toInsert->getNiveau().');');
             $id = intval($db->lastInsertId());
-            $ressourcesId = array();
+            $returnValue->setId($id);
             
             foreach ($toInsert->getCout() as $cout){
                 $ressourceId = 0;
@@ -31,25 +28,15 @@ class DAOTechnologie {
                 if(is_null($cout->getId())){
                     $ressource = $DAORessource->create($cout);
                     $ressourceId = $ressource->getId();
-                    $ressourcesId[] = $ressourceId;
                 }
                 else{
                     $ressourceId = $cout->getId();
-                    $ressourcesId[] = $ressourceId;
                 }
                 
                 $db->query('INSERT INTO TechnologieCout (idTechnologie, idRessource) VALUES ('.$id.','.$ressourceId.');');
             }
 
-            foreach($db->query('SELECT id,nom,niveau FROM Technologie WHERE id='.$id.';') as $row){
-                $returnValue->setId($row['id']);
-                $returnValue->setNom($row['nom']);
-                $returnValue->setNiveau($row['niveau']);
-            }
-
-            foreach($ressourcesId as $resId){
-                $returnValue->addRessourceCout($DAORessource->getRessourceById($resId));
-            }
+            $returnValue = $this->getTechnologieById($id);
         } catch (Exception $ex) {
             echo($ex->getMessage());
         }
@@ -59,20 +46,44 @@ class DAOTechnologie {
     /*
      * Returns a Technologie object, based on its id
      */
-    public function getRessourceById($id, $db = null){
-        $returnValue = new Ressource();
+    public function getTechnologieById($id, $db = null){
+        $returnValue = null;
         try{
             if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
             
-            foreach($db->query('SELECT id,nom,quantite FROM Ressource WHERE id='.$id.';') as $row){
+            $returnValue = new Technologie();
+            $DAORessource = new DAORessource();
+            
+            foreach($db->query('SELECT id,nom,niveau FROM Technologie WHERE id='.$id.';') as $row){
                 $returnValue->setId($row['id']);
                 $returnValue->setNom($row['nom']);
-                $returnValue->setQuantite($row['quantite']);
+                $returnValue->setNiveau($row['niveau']);
+            }
+            
+            foreach($db->query('SELECT idRessource FROM TechnologieCout WHERE idTechnologie='.$id.';') as $row){
+                $returnValue->addRessourceCout($DAORessource->getRessourceById($row['idRessource']));
             }
         } catch (Exception $ex) {
             echo($ex->getMessage());
         }
         return $returnValue;
+    }
+    
+    /*
+     * Updates a Technologie object, based on its id
+     */
+    public function updateRessource(Technologie $toUpdate, $db = null){
+        try{
+            if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
+            $result = $db->query('UPDATE Technologie SET nom=\''.$toUpdate->getNom().'\',niveau='.$toUpdate->getNiveau().' WHERE id='.$toUpdate->getId().';');
+            $DAORessource = new DAORessource();
+            
+            foreach($toUpdate->getCout() as $ressourceToUpdate){
+                $DAORessource->updateRessource($ressourceToUpdate);
+            }
+        } catch (Exception $ex) {
+            echo($ex->getMessage());
+        }
     }
     
     
