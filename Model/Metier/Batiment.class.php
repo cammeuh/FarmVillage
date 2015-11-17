@@ -5,6 +5,7 @@ require_once('Technologie.class.php');
 abstract class Batiment {
     protected $_id;		// int
     protected $_niveau;		// int
+    protected $_nom;            // string
     protected $_cout;		// Ressource[]
     protected $_techNeeded;	// Technologie[]
 	
@@ -34,7 +35,16 @@ abstract class Batiment {
     public function setNiveau($niveau){
         $this->_niveau = $niveau;
     }
+    
+    function getNom() {
+        return $this->_nom;
+    }
 
+    function setNom($nom) {
+        $this->_nom = $nom;
+    }
+
+    
     public function getCout(){
         return $this->_cout;
     }

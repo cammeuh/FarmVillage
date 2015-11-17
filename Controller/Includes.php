@@ -1,5 +1,6 @@
 <?php
     require_once('..'.DIRECTORY_SEPARATOR.'Helper'.DIRECTORY_SEPARATOR.'Constant.php');
+    require_once('GlobalController.php');
     
     foreach (glob(METIERPATH.'*.php') as $filename)
     {

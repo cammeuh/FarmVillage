@@ -19,7 +19,7 @@ class DAOBatimentDefense {
             $DAORessource = new DAORessource();
             $DAOTechnologie = new DAOTechnologie();
             $returnValue = $toInsert;
-            $db->query('INSERT INTO BatimentDefense (niveau,attaque,defense) VALUES ('.$toInsert->getNiveau().','.$toInsert->getAttaque().','.$toInsert->getDefense().');');
+            $db->query('INSERT INTO BatimentDefense (niveau,nom,attaque,defense) VALUES ('.$toInsert->getNiveau().',\''.$toInsert->getNom().'\','.$toInsert->getAttaque().','.$toInsert->getDefense().');');
             $id = intval($db->lastInsertId());
             $returnValue->setId($id);
             
@@ -70,11 +70,12 @@ class DAOBatimentDefense {
             $DAORessource = new DAORessource();
             $DAOTechnologie = new DAOTechnologie();
             
-            foreach($db->query('SELECT id,niveau,attaque,defense FROM BatimentDefense WHERE id='.$id.';') as $row){
+            foreach($db->query('SELECT id,niveau,nom,attaque,defense FROM BatimentDefense WHERE id='.$id.';') as $row){
                 $returnValue->setId($row['id']);
                 $returnValue->setNiveau($row['niveau']);
                 $returnValue->setAttaque($row['attaque']);
                 $returnValue->setDefense($row['defense']);
+                $returnValue->setNom($row[['nom']]);
             }
             
             foreach($db->query('SELECT idRessource FROM BatimentDefenseCout WHERE idBatiment='.$id.';') as $row){

@@ -8,6 +8,7 @@ class Unite {
     private $_affectationDef;	// BatimentDefense
     private $_affectationProd;	// BatimentProduction
     private $_niveau;		// int
+    private $_type;             // string
     private $_cout;		// Ressource[]
     private $_techNeeded;	// Technologie[]
 	
@@ -69,7 +70,24 @@ class Unite {
     public function setTechNeeded($techNeeded){
         $this->_techNeeded = $techNeeded;
     }
+    
+    public function getAffectationDef() {
+        return $this->_affectationDef;
+    }
 
+    public function getAffectationProd() {
+        return $this->_affectationProd;
+    }
+
+    public function getType() {
+        return $this->_type;
+    }
+
+    public function setType($type) {
+        $this->_type = $type;
+    }
+
+    
     /*
      * FONCTIONS GENERIQUES
      */

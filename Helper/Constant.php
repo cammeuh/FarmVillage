@@ -10,17 +10,22 @@
    define('RESSOURCEUN', 'Hilarium lourd'); //creer unite - gaz
    define('RESSOURCEDEUX', 'Manchefer'); // creer batiment - minerai
    define('RESSOURCETROIS', 'Zortie'); // soigner - herbe (technologie?)
-   define('RESSOURCEQUATRE', 'Terre');
+   define('RESSOURCEQUATRE', 'Ressource Quatre');
    
    define('TECHNOLOGIEUN', 'Informatique');
    define('TECHNOLOGIEDEUX', 'Physique');
    define('TECHNOLOGIETROIS', 'Mathématique');
    define('TECHNOLOGIEQUATRE', 'Chimie');
    
-   define('BATIMENTUN', 'Source d\'hilarium');
-   define('BATIMENTDEUX', 'Mine de manchefer');
-   define('BATIMENTTROIS', 'Champ de zortie');
-   define('BATIMENTQUATRE', 'Chimie');
+   define('BATIMENTPRODUN', 'Source d\'hilarium');
+   define('BATIMENTPRODDEUX', 'Mine de manchefer');
+   define('BATIMENTPRODTROIS', 'Champ de zortie');
+   define('BATIMENTPRODQUATRE', 'Producteur de Quatrieme Ressource');
+   
+   define('BATIMENTDEFUN', 'Defenseur Un');
+   define('BATIMENTDEFDEUX', 'Defenseur Deux');
+   define('BATIMENTDEFTROIS', 'Defenseur Trois');
+   define('BATIMENTDEFQUATRE', 'Defenseur Quatre');
    
    define('UNITEUN', 'Nain digène');
    define('UNITEDEUX', 'Nain bigène');

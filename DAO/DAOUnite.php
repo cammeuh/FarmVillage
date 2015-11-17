@@ -23,13 +23,13 @@ class DAOUnite {
             $idBatProd = $toInsert->getAffectationProduction() === 0 ? 0 : $toInsert->getAffectationProduction()->getId();
             
             if ($idBatDef == 0 && $idBatProd == 0){
-                $db->query('INSERT INTO Unite (niveau) VALUES ('.$toInsert->getNiveau().');');
+                $db->query('INSERT INTO Unite (niveau,type) VALUES ('.$toInsert->getNiveau().',\''.$toInsert->getType().'\');');
             }
             else if ($idBatProd == 0 && $idBatDef != 0){
-                $db->query('INSERT INTO Unite (niveau,idBatimentDefense) VALUES ('.$toInsert->getNiveau().','.$idBatDef.');');
+                $db->query('INSERT INTO Unite (niveau,type,idBatimentDefense) VALUES (\''.$toInsert->getType().'\','.$idBatDef.');');
             }
             else if ($idBatProd != 0 && $idBatDef == 0){
-                $db->query('INSERT INTO Unite (niveau,idBatimentProduction) VALUES ('.$toInsert->getNiveau().','.$idBatProd.');');
+                $db->query('INSERT INTO Unite (niveau,type,idBatimentProduction) VALUES ('.$toInsert->getNiveau().',\''.$toInsert->getType().'\','.$idBatProd.');');
             }
             
             $id = intval($db->lastInsertId());
@@ -83,11 +83,12 @@ class DAOUnite {
             $DAOBatimentDefense = new DAOBatimentDefense();
             $DAOBatimentProduction = new DAOBatimentProduction();
             
-            foreach($db->query('SELECT id,niveau,idBatimentDefense,idBatimentProduction FROM Unite WHERE id='.$id.';') as $row){
+            foreach($db->query('SELECT id,niveau,type,idBatimentDefense,idBatimentProduction FROM Unite WHERE id='.$id.';') as $row){
                 $returnValue->setId($row['id']);
                 $returnValue->setNiveau($row['niveau']);
                 $row['idBatimentDefense'] == 0 ? $returnValue->setAffectationDefense(0) : $returnValue->setAffectationDefense($DAOBatimentDefense->getBatimentDefenseById($row['idBatimentDefense']));
                 $row['idBatimentProduction'] == 0 ? $returnValue->setAffectationProduction(0) : $returnValue->setAffectationProduction($DAOBatimentProduction->getBatimentProductionById($row['idBatimentProduction']));
+                $returnValue->setType($row['type']);
             }
             
             foreach($db->query('SELECT idRessource FROM UniteCout WHERE idUnite='.$id.';') as $row){
@@ -111,7 +112,7 @@ class DAOUnite {
             if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
             $idBatDef = $toUpdate->getAffectationDefense() == 0 ? 0 : $toUpdate->getAffectationDefense()->getId();
             $idBatProd = $toUpdate->getAffectationProduction() == 0 ? 0 : $toUpdate->getAffectationProduction()->getId();
-            $result = $db->query('UPDATE Unite SET niveau='.$toUpdate->getNiveau().',idBatimentDefense='.$idBatDef.',idBatimentProduction='.$idBatProd.' WHERE id='.$toUpdate->getId().';');
+            $result = $db->query('UPDATE Unite SET niveau='.$toUpdate->getNiveau().',type = \''.$toUpdate->getType().'\'idBatimentDefense='.$idBatDef.',idBatimentProduction='.$idBatProd.' WHERE id='.$toUpdate->getId().';');
         } catch (Exception $ex) {
             echo($ex->getMessage());
         }

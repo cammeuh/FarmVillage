@@ -8,14 +8,7 @@ class DAOBatimentProduction {
     public function __construct() {
         
     }
-    private $_productionType;	// Ressource
-    private $_productionTemps;	// int
-    private $_prixReparation;	// Ressource[]
-    private $_actif;            // bool
-    protected $_id;		// int
-    protected $_niveau;		// int
-    protected $_cout;		// Ressource[]
-    protected $_techNeeded;	// Technologie[]
+    
     /*
      * Inserts a new BatimentProduction into DB, and returns the object with its ID
      */
@@ -27,7 +20,7 @@ class DAOBatimentProduction {
             $DAOTechnologie = new DAOTechnologie();
             $returnValue = $toInsert;
             $returnValue->setProductionType($DAORessource->create($toInsert->getProductionType()));
-            $db->query('INSERT INTO BatimentProduction (niveau,productionTemps,actif,idRessource) VALUES ('.$toInsert->getNiveau().','.time().','.$toInsert->isActif().','.$returnValue->getProductionType()->getId().');');
+            $db->query('INSERT INTO BatimentProduction (niveau,nom,productionTemps,actif,idRessource) VALUES ('.$toInsert->getNiveau().',\''.$toInsert->getNom().'\','.time().','.$toInsert->isActif().','.$returnValue->getProductionType()->getId().');');
             $id = intval($db->lastInsertId());
             $returnValue->setId($id);
             
@@ -45,18 +38,20 @@ class DAOBatimentProduction {
                 $db->query('INSERT INTO BatimentProductionCout (idBatiment, idRessource) VALUES ('.$id.','.$ressourceId.');');
             }
             
-            foreach ($toInsert->getTechNeeded() as $tech){
-                $techNeededId = 0;
-                
-                if(is_null($tech->getId())){
-                    $technologie = $DAOTechnologie->create($tech);
-                    $techNeededId = $technologie->getId();
+            if(!is_null($toInsert->getTechNeeded())){
+                foreach ($toInsert->getTechNeeded() as $tech){
+                    $techNeededId = 0;
+
+                    if(is_null($tech->getId())){
+                        $technologie = $DAOTechnologie->create($tech);
+                        $techNeededId = $technologie->getId();
+                    }
+                    else{
+                        $techNeededId = $tech->getId();
+                    }
+
+                    $db->query('INSERT INTO BatimentProductionTechnologie (idBatiment, idTechnologie) VALUES ('.$id.','.$techNeededId.');');
                 }
-                else{
-                    $techNeededId = $tech->getId();
-                }
-                
-                $db->query('INSERT INTO BatimentProductionTechnologie (idBatiment, idTechnologie) VALUES ('.$id.','.$techNeededId.');');
             }
             
             foreach ($toInsert->getPrixReparation() as $cout){
@@ -90,9 +85,10 @@ class DAOBatimentProduction {
             $DAORessource = new DAORessource();
             $DAOTechnologie = new DAOTechnologie();
             
-            foreach($db->query('SELECT id,niveau,productionTemps,actif,idRessource FROM BatimentProduction WHERE id='.$id.';') as $row){
+            foreach($db->query('SELECT id,niveau,nom,productionTemps,actif,idRessource FROM BatimentProduction WHERE id='.$id.';') as $row){
                 $returnValue->setId($row['id']);
                 $returnValue->setNiveau($row['niveau']);
+                $returnValue->setNom($row['nom']);
                 $returnValue->setProductionTemps($row['productionTemps']);
                 $returnValue->setActif($row['actif']);
                 $returnValue->setProductionType($DAORessource->getRessourceById($row['idRessource']));

@@ -22,7 +22,8 @@
     <div id="body">
         <?php
             $controller->initDB();
-            $controller->createTestUnit();
+            $controller->createFirstUser();
+            //$controller->createTestUnit();
             //$controller->testNewRessource();
         ?>
     </div>

@@ -8,10 +8,7 @@ class DAOUser {
     public function __construct() {
         
     }
-    private $_pseudo;		// string
-    private $_coordonnee;	// string
-    private $_faction;		// string
-    private $_password;		// string
+    
     /*
      * Inserts a new User into DB, and returns the object with its ID
      */
@@ -155,15 +152,129 @@ class DAOUser {
     }
     
     /*
-     * Updates a User object, based on its id
+     * Updates a User object and returns it updated (ids might change in the process)
      */
     public function updateUser(User $toUpdate, $db = null){
+        $returnValue = $toUpdate;
         try{
             if(!isset($db)) $db = new PDO('mysql:host=localhost;dbname=FarmVillage;charset=utf8', 'nico', 'nico');
-            $result = $db->query('UPDATE User SET coordonnee=\''.$toUpdate->getCoordonnee().'\',faction=\''.$toUpdate->getFaction().'\',password=\''.$toUpdate->getPassword().'\' WHERE pseudo=\''.$toUpdate->getPseudo().'\';');
+            $this->deleteUser($toUpdate, $db);
+            
+            foreach($toUpdate->getRessources() as $res){
+                $res->setId(null);
+            }
+            
+            foreach($toUpdate->getTechnologies() as $tech){
+                $tech->setId(null);
+                
+                foreach($tech->getCout() as $res){
+                    $res->setId(null);
+                }
+            }
+            
+            foreach($toUpdate->getBatimentsDefense() as $batDef){
+                $batDef->setId(null);
+                
+                foreach($tech->getCout() as $res){
+                    $res->setId(null);
+                }
+                
+                foreach($batDef->getTechNeeded() as $tech){
+                    $tech->setId(null);
+                    
+                    foreach($tech->getCout() as $res){
+                        $res->setId(null);
+                    }
+                }
+            }
+            
+            foreach($toUpdate->getBatimentsProduction() as $batProd){
+                $batProd->setId(null);
+                
+                foreach($tech->getCout() as $res){
+                    $res->setId(null);
+                }
+                
+                foreach($batProd->getTechNeeded() as $tech){
+                    $tech->setId(null);
+                    
+                    foreach($tech->getCout() as $res){
+                        $res->setId(null);
+                    }
+                }
+                
+                $batProd->getProductionType()->setId(null);
+                
+                foreach($batProd->getPrixReparation() as $res){
+                    $res->setId(null);
+                }
+            }
+            
+            foreach($toUpdate->getUnites() as $unit){
+                $unit->setId(null);
+                
+                if($unit->getAffectationProd() !== 0){
+                    foreach($unit->getAffectationProd() as $batProd){
+                        $batProd->setId(null);
+
+                        foreach($tech->getCout() as $res){
+                            $res->setId(null);
+                        }
+
+                        foreach($batProd->getTechNeeded() as $tech){
+                            $tech->setId(null);
+
+                            foreach($tech->getCout() as $res){
+                                $res->setId(null);
+                            }
+                        }
+
+                        $batProd->getProductionType()->setId(null);
+
+                        foreach($batProd->getrixReparation() as $res){
+                            $res->setId(null);
+                        }
+                    }
+                }
+                
+                
+                if($unit->getAffectationDef() !== 0){
+                    foreach($unit->getAffectationDef() as $batDef){
+                        $batDef->setId(null);
+
+                        foreach($tech->getCout() as $res){
+                            $res->setId(null);
+                        }
+
+                        foreach($batDef->getTechNeeded() as $tech){
+                            $tech->setId(null);
+
+                            foreach($tech->getCout() as $res){
+                                $res->setId(null);
+                            }
+                        }
+                    }
+                }
+                
+                foreach($unit->getTechNeeded() as $tech){
+                    $tech->setId(null);
+
+                    foreach($tech->getCout() as $res){
+                        $res->setId(null);
+                    }
+                }
+                
+                foreach($unit->getCout() as $res){
+                    $res->setId(null);
+                }
+            }
+            
+            $returnValue = $this->create($toUpdate, $db);
+            
         } catch (Exception $ex) {
             echo($ex->getMessage());
         }
+        return $returnValue;
     }
     
     /*
