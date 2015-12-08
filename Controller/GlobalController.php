@@ -41,63 +41,125 @@
             return $returnValue;
         }
         
+        public function compareTechnologies($userTech, $tech){
+            $returnValue = true;
+            
+            foreach($userTech as $ut){
+                foreach($tech as $t){
+                    if ($ut->getNom() === $t->getNom()){
+                        if ($ut->getNiveau() < $t->getNiveau()){
+                            $returnValue = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            return $returnValue;
+        }
+        
+        public function compareRessources($userRess, $ress){
+            $returnValue = true;
+            
+            foreach($userRess as $ur){
+                foreach($ress as $r){
+                    if ($ur->getNom() === $r->getNom()){
+                        if ($ur->getQuantite() < $r->getQuantite()){
+                            $returnValue = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            return $returnValue;
+        }
+        
+        /*
+         * THIS METHOD MUST BE CALLED EVERYTIME WE GET A NEW PAGE
+         * it calculates the ressources produced since last page visited
+         */
+        public function calculateNewProduction(User $user){
+            $returnValue = $user;
+            $now = time();
+            foreach($user->getBatimentsProduction() as $batiment){
+                if ($batiment->isActif()){
+                    $then = $batiment->getProductionTemps();
+                    $timeDelta = $now-$then;
+                    $ressourceNom = $batiment->getProductionType()->getNom();
+                    $ressourceQuantiteAProduire = $batiment->getProductionType()->getQuantite();
+                    $batimentNiveau = $batiment->getNiveau();
+                    
+                    foreach($user->getRessources() as $ressource){
+                        if ($ressource->getNom() == $ressourceNom){
+                            $ressourceQuantiteThen = $ressource->getQuantite();
+                            $ressource->addQuantite($ressourceQuantiteAProduire*($timeDelta*$batimentNiveau/3600));
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            return $returnValue;
+        }
+        
         /*
          * METHODS TO CREATE BASIC OBJECTS, WHICH ARE PLAYABLE
          */
         
         public function createNewUser($pseudo, $password, $faction, $coordonnee){
-            $ressourcesToCreate = array();
-            $ressourcesToCreate[] = $this->createRessource(RESSOURCEUN, 1000);
-            $ressourcesToCreate[] = $this->createRessource(RESSOURCEDEUX, 800);
-            $ressourcesToCreate[] = $this->createRessource(RESSOURCETROIS);
-            $ressourcesToCreate[] = $this->createRessource(RESSOURCEQUATRE);
-            
-            $technologiesToCreate = array();
-            $technologiesToCreate[] = $this->createTechnologie(TECHNOLOGIEUN, $this->createRessource(RESSOURCEUN, 2000));
-            $technologiesToCreate[] = $this->createTechnologie(TECHNOLOGIEDEUX, [$this->createRessource(RESSOURCEUN, 2000), $this->createRessource(RESSOURCEDEUX, 1500)]);
-            $technologiesToCreate[] = $this->createTechnologie(TECHNOLOGIETROIS, $this->createRessource(RESSOURCETROIS, 500));
-            $technologiesToCreate[] = $this->createTechnologie(TECHNOLOGIEQUATRE, [$this->createRessource(RESSOURCETROIS, 1000), $this->createRessource(RESSOURCEQUATRE, 500)]);
-            
+            $ressourcesToCreate = $this->createNewRessourcesForNewUser();
+            $technologiesToCreate = $this->createNewTechnologiesForNewUser();          
             $batimentsDefToCreate = array();
-
-            $batimentsProdToCreate = array();
-            $batimentsProdToCreate[] = $this->createBatimentProduction(BATIMENTPRODUN, 
-                    $this->createRessource(RESSOURCEUN, 300), 
-                    null, 
-                    $this->createRessource(RESSOURCEUN, 50), 
-                    $this->createRessource(RESSOURCEUN, 300),
-                    true);
-            $batimentsProdToCreate[] = $this->createBatimentProduction(BATIMENTPRODDEUX, 
-                    $this->createRessource(RESSOURCEUN, 450),
-                    null, 
-                    $this->createRessource(RESSOURCEDEUX, 40), 
-                    $this->createRessource(RESSOURCEUN, 450),
-                    true);
-            $batimentsProdToCreate[] = $this->createBatimentProduction(BATIMENTPRODTROIS, 
-                    [$this->createRessource(RESSOURCEUN, 450), $this->createRessource(RESSOURCEDEUX, 150)],
-                    $this->createTechnologie(TECHNOLOGIEUN, $this->createRessource(RESSOURCEUN, 2000), $niveau = 2), 
-                    $this->createRessource(RESSOURCETROIS, 15), 
-                    $this->createRessource(RESSOURCEUN, 600),
-                    true);
-            $batimentsProdToCreate[] = $this->createBatimentProduction(BATIMENTPRODQUATRE, 
-                    [$this->createRessource(RESSOURCEUN, 600), $this->createRessource(RESSOURCETROIS, 100)], 
-                    $this->createTechnologie(TECHNOLOGIEDEUX, $this->createRessource(RESSOURCEUN, 2500), $niveau = 3),
-                    $this->createRessource(RESSOURCEQUATRE, 10), 
-                    $this->createRessource(RESSOURCEUN, 600),
-                    true);
-            
+            $batimentsProdToCreate = $this->createNewBatimentsProductionForNewUser();
             $unitesToCreate = array();
             
             return $this->createUser($pseudo, $password, $faction, $coordonnee, $ressourcesToCreate, $technologiesToCreate, $batimentsDefToCreate, $batimentsProdToCreate, $unitesToCreate);
         }
         
-        public function createNewRessource(){
+        public function createNewRessourcesForNewUser(){
+            $returnValue = array();
+            $returnValue[] = $this->createRessource(RESSOURCEUN, 3000);
+            $returnValue[] = $this->createRessource(RESSOURCEDEUX, 800);
+            $returnValue[] = $this->createRessource(RESSOURCETROIS);
             
+            return $returnValue;
+        }
+        
+        public function createNewTechnologiesForNewUser(){
+            $returnValue = array();
+            $returnValue[] = $this->createTechnologie(TECHNOLOGIEUN, $this->createRessource(RESSOURCEUN, 2000));
+            $returnValue[] = $this->createTechnologie(TECHNOLOGIEDEUX, [$this->createRessource(RESSOURCEUN, 2000), $this->createRessource(RESSOURCEDEUX, 1500)]);
+            $returnValue[] = $this->createTechnologie(TECHNOLOGIETROIS, $this->createRessource(RESSOURCETROIS, 500));
+            
+            return $returnValue;
+        }
+        
+        public function createNewBatimentsProductionForNewUser(){
+            $returnValue = array();
+            $returnValue[] = $this->createBatimentProduction(BATIMENTPRODUN, 
+                    $this->createRessource(RESSOURCEUN, 300), 
+                    null, 
+                    $this->createRessource(RESSOURCEUN, 50), 
+                    $this->createRessource(RESSOURCEUN, 300),
+                    true);
+            $returnValue[] = $this->createBatimentProduction(BATIMENTPRODDEUX, 
+                    $this->createRessource(RESSOURCEUN, 450),
+                    $this->createTechnologie(TECHNOLOGIEUN, $this->createRessource(RESSOURCEUN, 2000), $niveau = 1),  
+                    $this->createRessource(RESSOURCEDEUX, 40), 
+                    $this->createRessource(RESSOURCEUN, 450),
+                    true);
+            $returnValue[] = $this->createBatimentProduction(BATIMENTPRODTROIS, 
+                    [$this->createRessource(RESSOURCEUN, 450), $this->createRessource(RESSOURCEDEUX, 150)],
+                    $this->createTechnologie(TECHNOLOGIEDEUX, $this->createRessource(RESSOURCEDEUX, 1500), $niveau = 2), 
+                    $this->createRessource(RESSOURCETROIS, 15), 
+                    $this->createRessource(RESSOURCEUN, 600),
+                    true);
+            return $returnValue;
         }
         
         /*
          * METHODS TO CREATE BASIC OBJECTS WITH PARAMS, MANDATORY OR NOT
-         * SHOULD NOT BE CALLED, OTHER METHODS ARE UP THERE FOR
          */
         
         /*

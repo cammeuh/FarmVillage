@@ -7,28 +7,21 @@
    define('METIERPATH', '..'.DIRECTORY_SEPARATOR.'Model'.DIRECTORY_SEPARATOR.'METIER'.DIRECTORY_SEPARATOR);
    define('VIEWPATH', '..'.DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR);
    
-   define('RESSOURCEUN', 'Hilarium lourd'); //creer unite - gaz
-   define('RESSOURCEDEUX', 'Manchefer'); // creer batiment - minerai
+   define('RESSOURCEUN', 'Manchefer'); // creer batiment - minerai
+   define('RESSOURCEDEUX', 'Hilarium lourd'); //creer unite - gaz
    define('RESSOURCETROIS', 'Zortie'); // soigner - herbe (technologie?)
-   define('RESSOURCEQUATRE', 'Ressource Quatre');
    
-   define('TECHNOLOGIEUN', 'Informatique');
-   define('TECHNOLOGIEDEUX', 'Physique');
-   define('TECHNOLOGIETROIS', 'Mathématique');
-   define('TECHNOLOGIEQUATRE', 'Chimie');
+   define('TECHNOLOGIEUN', 'Dégazation');
+   define('TECHNOLOGIEDEUX', 'Récoltation');
+   define('TECHNOLOGIETROIS', 'Connaissance du cote obscur');
    
    define('BATIMENTPRODUN', 'Source d\'hilarium');
    define('BATIMENTPRODDEUX', 'Mine de manchefer');
    define('BATIMENTPRODTROIS', 'Champ de zortie');
-   define('BATIMENTPRODQUATRE', 'Producteur de Quatrieme Ressource');
    
-   define('BATIMENTDEFUN', 'Defenseur Un');
-   define('BATIMENTDEFDEUX', 'Defenseur Deux');
-   define('BATIMENTDEFTROIS', 'Defenseur Trois');
-   define('BATIMENTDEFQUATRE', 'Defenseur Quatre');
+   define('BATIMENTDEFUN', 'Bouclier de mana');
+   define('BATIMENTDEFDEUX', 'Lanceur de roquettes de la mort');
    
    define('UNITEUN', 'Nain digène');
-   define('UNITEDEUX', 'Nain bigène');
-   define('UNITETROIS', 'Nain trigène');
-   define('UNITEQUATRE', 'Nain quadrigène');
+   define('UNITEDEUX', 'Nain capable');
 ?>

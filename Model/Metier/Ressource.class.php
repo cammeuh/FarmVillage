@@ -49,6 +49,10 @@ class Ressource {
             ".$this->_quantite."<br/>";
     }
     
+    public function addQuantite($quantite){
+        $this->_quantite += $quantite;
+    }
+    
     
 }
 ?>

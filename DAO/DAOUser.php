@@ -175,15 +175,17 @@ class DAOUser {
             foreach($toUpdate->getBatimentsDefense() as $batDef){
                 $batDef->setId(null);
                 
-                foreach($tech->getCout() as $res){
+                foreach($batDef->getCout() as $res){
                     $res->setId(null);
                 }
                 
-                foreach($batDef->getTechNeeded() as $tech){
-                    $tech->setId(null);
-                    
-                    foreach($tech->getCout() as $res){
-                        $res->setId(null);
+                if(!is_null($batDef->getTechNeeded())){
+                    foreach($batDef->getTechNeeded() as $tech){
+                        $tech->setId(null);
+
+                        foreach($tech->getCout() as $res){
+                            $res->setId(null);
+                        }
                     }
                 }
             }
@@ -191,15 +193,17 @@ class DAOUser {
             foreach($toUpdate->getBatimentsProduction() as $batProd){
                 $batProd->setId(null);
                 
-                foreach($tech->getCout() as $res){
+                foreach($batProd->getCout() as $res){
                     $res->setId(null);
                 }
                 
-                foreach($batProd->getTechNeeded() as $tech){
-                    $tech->setId(null);
-                    
-                    foreach($tech->getCout() as $res){
-                        $res->setId(null);
+                if(!is_null($batProd->getTechNeeded())){
+                    foreach($batProd->getTechNeeded() as $tech){
+                        $tech->setId(null);
+
+                        foreach($tech->getCout() as $res){
+                            $res->setId(null);
+                        }
                     }
                 }
                 
@@ -217,7 +221,7 @@ class DAOUser {
                     foreach($unit->getAffectationProd() as $batProd){
                         $batProd->setId(null);
 
-                        foreach($tech->getCout() as $res){
+                        foreach($batProd->getCout() as $res){
                             $res->setId(null);
                         }
 
@@ -237,12 +241,11 @@ class DAOUser {
                     }
                 }
                 
-                
                 if($unit->getAffectationDef() !== 0){
                     foreach($unit->getAffectationDef() as $batDef){
                         $batDef->setId(null);
 
-                        foreach($tech->getCout() as $res){
+                        foreach($batDef->getCout() as $res){
                             $res->setId(null);
                         }
 

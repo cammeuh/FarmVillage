@@ -106,8 +106,15 @@
             $user = $globalController->createNewUser('cammeuh', 'vodka', 'Alliance', '(2;2)');
             echo($globalController->displayUser($user));
             $DAOUser = new DAOUser();
-            $userDone = $DAOUser->create($user);
-            echo($globalController->displayUser($userDone));
+            $user = $DAOUser->create($user);
+            //sleep(5);
+            //$user = $globalController->calculateNewProduction($user);
+            //$user = $DAOUser->updateUser($user);
+            //echo($globalController->displayUser($user));
+            var_dump($user);
+            $gtc = new GestionTechnologieController();
+            $user = $gtc->upgradeTechnologie($user, 1);
+            var_dump($user);
         }
         /*
          * 
